@@ -1,70 +1,74 @@
-$(function() {
-
+$(function () {
     // Initialize file pickers
-    $('[data-provides="anomaly.field_type.files"]:not([data-initialized])').each(function () {
+    $('[data-provides="anomaly.field_type.files"]:not([data-initialized])')
+        .each(function () {
+            var $this = $(this);
 
-        $(this).attr('data-initialized', '');
+            $this.attr('data-initialized', '');
 
-        var input = $(this);
-        var field = input.data('field_name');
-        var wrapper = input.closest('.form-group');
-        var modal = $('#' + field + '-modal');
+            var field = $this.data('field_name');
+            var $wrapper = $this.closest('.form-group');
+            var modal = $('#' + field + '-modal');
 
-        var selected = $('[name="' + field + '"]').val().split(',');
+            var selected = $('[name="' + field + '"]').val().split(',');
 
-        wrapper.sort = function() {
-            wrapper.find('table').sortable({
-                handle: '.handle',
-                itemSelector: 'tr',
-                itemPath: '> tbody',
-                containerSelector: 'table',
-                placeholder: '<tr class="placeholder"/>',
-                afterMove: function($placeholder) {
+            $wrapper.sort = function () {
+                $wrapper.find('table').sortable({
+                    handle: '.handle',
+                    itemSelector: 'tr',
+                    itemPath: '> tbody',
+                    containerSelector: 'table',
+                    placeholder: '<tr class="placeholder"/>',
 
-                    $placeholder.closest('table').find('button.reorder').removeClass('disabled');
+                    afterMove: function ($placeholder) {
+                        $placeholder.closest('table')
+                            .find('button.reorder')
+                            .removeClass('disabled');
 
-                    $placeholder.closest('table').find('.dragged').detach().insertBefore($placeholder);
+                        $placeholder
+                            .closest('table')
+                            .find('.dragged')
+                            .detach()
+                            .insertBefore($placeholder);
 
-                    selected = [];
+                        selected = [];
 
-                    $(wrapper.find('table').find('[data-dismiss="file"]')).each(function() {
-                        selected.push(String($(this).data('file')));
-                    });
+                        $wrapper.find('table')
+                            .find('[data-dismiss="file"]')
+                            .each(function () {
+                                selected.push(String($(this).data('file')));
+                            });
 
-                    $('[name="' + field + '"]').val($.unique(selected).join(','));
-                }
+                        $('[name="' + field + '"]')
+                            .val($.unique(selected).join(','));
+                    }
+                });
+            };
+
+            $wrapper.sort();
+
+            modal.on('click', '[data-file]', function (e) {
+                e.preventDefault();
+                selected.push(String($(this).data('file')));
+
+                $('[name="' + field + '"]').val(selected.join(','));
+                $(this).closest('tr').addClass('success').fadeOut();
+
+                $wrapper.find('.selected').load(
+                    REQUEST_ROOT_PATH + '/streams/files-field_type/selected?uploaded=' + selected.join(','),
+                    function () {
+                        $wrapper.sort();
+                    }
+                );
             });
-        };
 
-        wrapper.sort();
+            $wrapper.on('click', '[data-dismiss="file"]', function (e) {
+                e.preventDefault();
 
-        modal.on('click', '[data-file]', function(e) {
+                selected.splice(selected.indexOf(String($(this).data('file'))), 1);
+                $('[name="' + field + '"]').val(selected.join(','));
 
-            e.preventDefault();
-
-            selected.push(String($(this).data('file')));
-
-            $('[name="' + field + '"]').val(selected.join(','));
-
-            $(this).closest('tr').addClass('success').fadeOut();
-
-            wrapper.find('.selected').load(
-                REQUEST_ROOT_PATH + '/streams/files-field_type/selected?uploaded=' + selected.join(','),
-                function() {
-                    wrapper.sort();
-                }
-            );
+                $(this).closest('tr').addClass('danger').fadeOut();
+            });
         });
-
-        $(wrapper).on('click', '[data-dismiss="file"]', function(e) {
-
-            e.preventDefault();
-
-            selected.splice(selected.indexOf(String($(this).data('file'))), 1);
-
-            $('[name="' + field + '"]').val(selected.join(','));
-
-            $(this).closest('tr').addClass('danger').fadeOut();
-        });
-    });
 });
