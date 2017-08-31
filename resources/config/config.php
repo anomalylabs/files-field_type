@@ -1,14 +1,12 @@
 <?php
 
-use Anomaly\FilesModule\Folder\Contract\FolderRepositoryInterface;
+use Anomaly\FilesFieldType\Support\Config\FoldersOptions;
 
 return [
     'folders' => [
         'type'   => 'anomaly.field_type.checkboxes',
         'config' => [
-            'options' => function (FolderRepositoryInterface $folders) {
-                return $folders->all()->pluck('name', 'id')->all();
-            },
+            'handler' => FoldersOptions::class,
         ],
     ],
     'min'     => [
