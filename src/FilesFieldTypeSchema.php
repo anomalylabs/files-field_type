@@ -31,11 +31,15 @@ class FilesFieldTypeSchema extends FieldTypeSchema
             $table,
             function (Blueprint $table) {
 
+                $table->increments('id');
                 $table->integer('entry_id');
                 $table->integer('file_id');
                 $table->integer('sort_order')->nullable();
 
-                $table->primary(['entry_id', 'file_id'], 'unique-files');
+                $table->unique(
+                    ['entry_id', 'file_id'],
+                    md5($table->getTable() . '_' . $this->fieldType->getField() . '-unique-files')
+                );
             }
         );
     }

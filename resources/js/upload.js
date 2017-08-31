@@ -12,12 +12,15 @@ $(function () {
 
     template.remove();
 
-    var dropzone = new Dropzone('.dropzone',
+    var dropzone = new Dropzone('.dropzone:not(data-initialized)',
         {
             paramName: 'upload',
             url: REQUEST_ROOT_PATH + '/streams/files-field_type/handle',
             headers: {
                 'X-CSRF-TOKEN': CSRF_TOKEN
+            },
+            init: function () {
+                $('.dropzone').attr('data-initialized', '');
             },
             sending: function (file, xhr, formData) {
                 formData.append('folder', element.data('folder'));
@@ -69,9 +72,12 @@ $(function () {
     });
 
     // When file fails to upload.
-    dropzone.on('error', function (file) {
+    dropzone.on('error', function (file, message) {
+
         file.previewElement.querySelector("[data-dz-uploadprogress]").setAttribute('value', 100);
         file.previewElement.querySelector('[data-dz-uploadprogress]').setAttribute('class', 'progress progress-danger');
+
+        alert(message.error ? message.error : message);
     });
 
     // When all files are processed.

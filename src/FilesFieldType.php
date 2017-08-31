@@ -46,7 +46,9 @@ class FilesFieldType extends FieldType
      *
      * @var array
      */
-    protected $config = [];
+    protected $config = [
+        'mode' => 'default',
+    ];
 
     /**
      * The cache repository.
@@ -202,7 +204,7 @@ class FilesFieldType extends FieldType
 
         $files = $this->getValue();
 
-        // Arrays are from validatoin.
+        // Arrays are from validation.
         if (!$files instanceof EntryCollection) {
             $table->setUploaded(array_unique($files));
         }

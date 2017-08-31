@@ -14,4 +14,13 @@ return [
         'label'        => 'Maximum Selections',
         'instructions' => 'Enter the maximum number of allowed selections.',
     ],
+    'mode'    => [
+        'name'         => 'Input Mode',
+        'instructions' => 'How should users provide file input?',
+        'option'       => [
+            'default' => 'Upload and/or select files.',
+            'select'  => 'Select files only.',
+            'upload'  => 'Upload files only.',
+        ],
+    ],
 ];
