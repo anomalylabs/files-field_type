@@ -119,20 +119,13 @@ class FilesFieldType extends FieldType
     }
 
     /**
-     * Get the unsorted relation.
+     * Get the related model.
      *
-     * @return BelongsToMany
+     * @return null|FileModel
      */
-    public function getUnsortedRelation()
+    public function getRelatedModel()
     {
-        $entry = $this->getEntry();
-
-        return $entry->belongsToMany(
-            $this->getRelatedModel(),
-            $this->getPivotTableName(),
-            'entry_id',
-            'file_id'
-        );
+        return app($this->config('related', 'Anomaly\FilesModule\File\FileModel'));
     }
 
     /**
@@ -156,13 +149,20 @@ class FilesFieldType extends FieldType
     }
 
     /**
-     * Get the related model.
+     * Get the unsorted relation.
      *
-     * @return null|FileModel
+     * @return BelongsToMany
      */
-    public function getRelatedModel()
+    public function getUnsortedRelation()
     {
-        return app($this->config('related', 'Anomaly\FilesModule\File\FileModel'));
+        $entry = $this->getEntry();
+
+        return $entry->belongsToMany(
+            $this->getRelatedModel(),
+            $this->getPivotTableName(),
+            'entry_id',
+            'file_id'
+        );
     }
 
     /**

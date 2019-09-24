@@ -18,7 +18,7 @@ class FilesFieldTypeSchema extends FieldTypeSchema
     /**
      * Add the field type's pivot table.
      *
-     * @param Blueprint           $table
+     * @param Blueprint $table
      * @param AssignmentInterface $assignment
      */
     public function addColumn(Blueprint $table, AssignmentInterface $assignment)
@@ -30,7 +30,6 @@ class FilesFieldTypeSchema extends FieldTypeSchema
         $this->schema->create(
             $table,
             function (Blueprint $table) {
-
                 $table->increments('id');
                 $table->integer('entry_id');
                 $table->integer('file_id');
@@ -69,5 +68,4 @@ class FilesFieldTypeSchema extends FieldTypeSchema
             $table->getTable() . '_' . $this->fieldType->getField()
         );
     }
-
 }

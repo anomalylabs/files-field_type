@@ -3,7 +3,6 @@
 use Anomaly\FilesModule\Disk\Contract\DiskRepositoryInterface;
 use Anomaly\Streams\Platform\Ui\Form\FormBuilder;
 
-
 /**
  * Class ValidateDisk
  *
@@ -18,7 +17,7 @@ class ValidateDisk
     /**
      * Handle the validation.
      *
-     * @param  FormBuilder             $builder
+     * @param  FormBuilder $builder
      * @param  DiskRepositoryInterface $disks
      * @param                          $attribute
      * @return bool

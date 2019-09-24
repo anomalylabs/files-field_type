@@ -141,29 +141,6 @@ class ValueTableBuilder extends TableBuilder
     }
 
     /**
-     * Get the field type.
-     *
-     * @return FilesFieldType|null
-     */
-    public function getFieldType()
-    {
-        return $this->fieldType;
-    }
-
-    /**
-     * Set the field type.
-     *
-     * @param  FilesFieldType $fieldType
-     * @return $this
-     */
-    public function setFieldType(FilesFieldType $fieldType)
-    {
-        $this->fieldType = $fieldType;
-
-        return $this;
-    }
-
-    /**
      * Get the uploaded.
      *
      * @return array
@@ -182,6 +159,29 @@ class ValueTableBuilder extends TableBuilder
     public function setUploaded($uploaded)
     {
         $this->uploaded = $uploaded;
+
+        return $this;
+    }
+
+    /**
+     * Get the field type.
+     *
+     * @return FilesFieldType|null
+     */
+    public function getFieldType()
+    {
+        return $this->fieldType;
+    }
+
+    /**
+     * Set the field type.
+     *
+     * @param  FilesFieldType $fieldType
+     * @return $this
+     */
+    public function setFieldType(FilesFieldType $fieldType)
+    {
+        $this->fieldType = $fieldType;
 
         return $this;
     }

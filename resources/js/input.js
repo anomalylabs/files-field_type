@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
 
     // Initialize file pickers
     $('[data-provides="anomaly.field_type.files"]:not([data-initialized])').each(function () {
@@ -12,14 +12,14 @@ $(function() {
 
         let selected = $('[name="' + field + '"]').val().split(',');
 
-        wrapper.sort = function() {
+        wrapper.sort = function () {
             wrapper.find('table').sortable({
                 handle: '.handle',
                 itemSelector: 'tr',
                 itemPath: '> tbody',
                 containerSelector: 'table',
                 placeholder: '<tr class="placeholder"/>',
-                afterMove: function($placeholder) {
+                afterMove: function ($placeholder) {
 
                     $placeholder.closest('table').find('button.reorder').removeClass('disabled');
 
@@ -27,7 +27,7 @@ $(function() {
 
                     selected = [];
 
-                    $(wrapper.find('table').find('[data-dismiss="file"]')).each(function() {
+                    $(wrapper.find('table').find('[data-dismiss="file"]')).each(function () {
                         selected.push(String($(this).data('file')));
                     });
 
@@ -38,16 +38,16 @@ $(function() {
 
         wrapper.sort();
 
-        $(wrapper).on('click', '[data-remove="all"]', function(e) {
+        $(wrapper).on('click', '[data-remove="all"]', function (e) {
 
             e.preventDefault();
 
-            $(wrapper).find('[data-dismiss="file"]').each(function() {
+            $(wrapper).find('[data-dismiss="file"]').each(function () {
                 $(this).click();
             });
         });
 
-        modal.on('click', '[data-file]', function(e) {
+        modal.on('click', '[data-file]', function (e) {
 
             e.preventDefault();
 
@@ -59,13 +59,13 @@ $(function() {
 
             wrapper.find('.selected').load(
                 REQUEST_ROOT_PATH + '/streams/files-field_type/selected?uploaded=' + selected.join(','),
-                function() {
+                function () {
                     wrapper.sort();
                 }
             );
         });
 
-        modal.on('click', '[name="action"][value="add_selected"]', function(e) {
+        modal.on('click', '[name="action"][value="add_selected"]', function (e) {
 
             e.preventDefault();
 
@@ -78,13 +78,13 @@ $(function() {
 
             wrapper.find('.selected').load(
                 REQUEST_ROOT_PATH + '/streams/files-field_type/selected?uploaded=' + selected.join(','),
-                function() {
+                function () {
                     wrapper.sort();
                 }
             );
         });
 
-        $(wrapper).on('click', '[data-dismiss="file"]', function(e) {
+        $(wrapper).on('click', '[data-dismiss="file"]', function (e) {
 
             e.preventDefault();
 
