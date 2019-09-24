@@ -9,6 +9,7 @@ $(function () {
     let element = $('.dropzone');
     let template = uploader.find('.template');
     let preview = template.html();
+    let duplicates = uploader.find('select[name="duplicates"]');
 
     template.remove();
 
@@ -26,7 +27,23 @@ $(function () {
                 formData.append('folder', element.data('folder'));
             },
             accept: function (file, done) {
-                $.post(REQUEST_ROOT_PATH + '/streams/files-field_type/exists/' + element.data('folder'), {'file': file.name}, function (data) {
+
+                if (duplicates.val() == 'ignore') {
+
+                    dropzone.removeFile(file);
+
+                    return;
+                }
+
+                if (duplicates.val() == 'overwrite') {
+
+                    done();
+
+                    return;
+                }
+
+                $.post(REQUEST_ROOT_PATH + '/streams/files-field_type/exists/' + element.data('folder'), { 'file': file.name }, function (data) {
+
                     if (data.exists) {
                         if (!confirm(file.name + " " + element.data('overwrite'))) {
                             dropzone.removeFile(file);

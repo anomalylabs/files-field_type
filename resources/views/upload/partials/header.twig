@@ -22,4 +22,18 @@
         {% endfor %}
     </div>
 
+    <div style="margin-top:1rem;">
+        <label>
+            {{ trans('anomaly.field_type.files::message.duplicates') }}:
+
+            <select name="duplicates">
+                <option value="ask">{{ trans('anomaly.field_type.files::input.duplicate.ask') }}</option>
+                <option value="ignore">{{ trans('anomaly.field_type.files::input.duplicate.ignore') }}</option>
+                <option value="overwrite">{{ trans('anomaly.field_type.files::input.duplicate.overwrite') }}</option>
+            </select>
+        </label>
+
+    </div>
+
+
 </div>
