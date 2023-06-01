@@ -34,7 +34,10 @@ class UploadController extends AdminController
 
         $config = Cache::get($key);
 
-        $allowed = array_intersect(Arr::get($config, 'allowed_types', []), $folder->getAllowedTypes());
+        $allowed = array_intersect(
+            Arr::get($config, 'allowed_types', []),
+            $folder->getAllowedTypes()
+        );
 
         return $this->view->make(
             'anomaly.field_type.files::upload/index',
