@@ -78,7 +78,7 @@ class FilesController extends AdminController
      */
     public function selected(ValueTableBuilder $table)
     {
-        return $table->setUploaded(explode(',', $this->request->get('uploaded')))->make()->getTableContent();
+        return $table->setUploaded(array_filter(explode(',', $this->request->get('uploaded'))))->make()->getTableContent();
     }
 
     /**
