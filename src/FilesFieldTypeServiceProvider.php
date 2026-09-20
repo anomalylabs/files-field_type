@@ -1,6 +1,8 @@
 <?php namespace Anomaly\FilesFieldType;
 
+use Anomaly\FilesFieldType\Listener\GuardFieldSlug;
 use Anomaly\Streams\Platform\Addon\AddonServiceProvider;
+use Anomaly\Streams\Platform\Ui\Form\Event\FormWasBuilt;
 
 /**
  * Class FilesFieldTypeServiceProvider
@@ -45,6 +47,17 @@ class FilesFieldTypeServiceProvider extends AddonServiceProvider
         'admin/files-field_type/recent/{key}'          => [
             'verb' => 'get',
             'uses' => 'Anomaly\FilesFieldType\Http\Controller\UploadController@recent',
+        ],
+    ];
+
+    /**
+     * The addon event listeners.
+     *
+     * @var array
+     */
+    protected $listeners = [
+        FormWasBuilt::class => [
+            GuardFieldSlug::class,
         ],
     ];
 }
