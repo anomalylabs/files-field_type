@@ -7,6 +7,7 @@ $(function() {
 
         let input = $(this);
         let field = input.data('field_name');
+        let key = input.data('config_key');
         let wrapper = input.closest('.form-group');
         let modal = $('#' + field + '-modal');
 
@@ -58,7 +59,7 @@ $(function() {
             $(this).closest('tr').addClass('success').fadeOut();
 
             wrapper.find('.selected').load(
-                REQUEST_ROOT_PATH + '/streams/files-field_type/selected?uploaded=' + selected.join(','),
+                REQUEST_ROOT_PATH + '/admin/files-field_type/selected/' + key + '?uploaded=' + selected.join(','),
                 function() {
                     wrapper.sort();
                 }
@@ -77,7 +78,7 @@ $(function() {
             $('[name="' + field + '"]').val(selected.join(','));
 
             wrapper.find('.selected').load(
-                REQUEST_ROOT_PATH + '/streams/files-field_type/selected?uploaded=' + selected.join(','),
+                REQUEST_ROOT_PATH + '/admin/files-field_type/selected/' + key + '?uploaded=' + selected.join(','),
                 function() {
                     wrapper.sort();
                 }

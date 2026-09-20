@@ -104,6 +104,13 @@ class ValueTableBuilder extends TableBuilder
     ];
 
     /**
+     * The folder IDs the field permits.
+     *
+     * @var array
+     */
+    protected $allowedFolders = [];
+
+    /**
      * Fired just before querying
      * for table entries.
      *
@@ -141,7 +148,40 @@ class ValueTableBuilder extends TableBuilder
              * order at this time.
              */
             $query->whereIn('id', $uploaded ?: [0]);
+
+            /*
+             * An ID list on its own addresses every file on
+             * the install, so a lookup is narrowed to the
+             * folders the field names. The branches above
+             * render the entry's own value and are not.
+             */
+            if ($folders = $this->getAllowedFolders()) {
+                $query->whereIn('folder_id', $folders);
+            }
         }
+    }
+
+    /**
+     * Get the allowed folder IDs.
+     *
+     * @return array
+     */
+    public function getAllowedFolders()
+    {
+        return $this->allowedFolders;
+    }
+
+    /**
+     * Set the allowed folder IDs.
+     *
+     * @param  array $allowedFolders
+     * @return $this
+     */
+    public function setAllowedFolders(array $allowedFolders)
+    {
+        $this->allowedFolders = $allowedFolders;
+
+        return $this;
     }
 
     /**

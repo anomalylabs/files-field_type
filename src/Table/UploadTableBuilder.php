@@ -108,6 +108,13 @@ class UploadTableBuilder extends TableBuilder
     ];
 
     /**
+     * The folder IDs the field permits.
+     *
+     * @var array
+     */
+    protected $allowedFolders = [];
+
+    /**
      * Fired just before querying
      * for table entries.
      *
@@ -119,8 +126,40 @@ class UploadTableBuilder extends TableBuilder
 
         $query->whereIn('id', $uploaded ?: [0]);
 
+        /*
+         * An ID list on its own addresses every file on the
+         * install, so it is narrowed to the folders the field
+         * names. No folders means the field is unrestricted.
+         */
+        if ($folders = $this->getAllowedFolders()) {
+            $query->whereIn('folder_id', $folders);
+        }
+
         $query->orderBy('updated_at', 'ASC');
         $query->orderBy('created_at', 'ASC');
+    }
+
+    /**
+     * Get the allowed folder IDs.
+     *
+     * @return array
+     */
+    public function getAllowedFolders()
+    {
+        return $this->allowedFolders;
+    }
+
+    /**
+     * Set the allowed folder IDs.
+     *
+     * @param  array $allowedFolders
+     * @return $this
+     */
+    public function setAllowedFolders(array $allowedFolders)
+    {
+        $this->allowedFolders = $allowedFolders;
+
+        return $this;
     }
 
     /**

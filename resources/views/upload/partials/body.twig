@@ -2,6 +2,7 @@
 
     <div class="dropzone"
          data-folder="{{ folder.id }}"
+         data-key="{{ key }}"
          data-icon="{{ icon('upload')|escape }}"
          data-max-size="{{ max_upload_size() }}"
          data-allowed="{{ allowed ? '.' ~ allowed|join(',.') }}"

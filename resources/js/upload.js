@@ -7,6 +7,7 @@ $(function () {
 
     let uploader = $('#upload');
     let element = $('.dropzone');
+    let key = element.data('key');
     let template = uploader.find('.template');
     let preview = template.html();
     let duplicates = uploader.find('select[name="duplicates"]');
@@ -16,7 +17,7 @@ $(function () {
     let dropzone = new Dropzone('.dropzone:not(data-initialized)',
         {
             paramName: 'upload',
-            url: REQUEST_ROOT_PATH + '/streams/files-field_type/handle',
+            url: REQUEST_ROOT_PATH + '/admin/files-field_type/handle/' + key,
             headers: {
                 'X-CSRF-TOKEN': CSRF_TOKEN
             },
@@ -42,7 +43,7 @@ $(function () {
                     return;
                 }
 
-                $.post(REQUEST_ROOT_PATH + '/streams/files-field_type/exists/' + element.data('folder'), { 'file': file.name }, function (data) {
+                $.post(REQUEST_ROOT_PATH + '/admin/files-field_type/exists/' + element.data('folder') + '/' + key, { 'file': file.name }, function (data) {
 
                     if (data.exists) {
                         if (!confirm(file.name + " " + element.data('overwrite'))) {
@@ -102,6 +103,6 @@ $(function () {
 
         uploader.find('.uploaded .modal-body').html(element.data('loading') + '...');
 
-        uploader.find('.uploaded').load(REQUEST_ROOT_PATH + '/streams/files-field_type/recent?uploaded=' + uploaded.join(','));
+        uploader.find('.uploaded').load(REQUEST_ROOT_PATH + '/admin/files-field_type/recent/' + key + '?uploaded=' + uploaded.join(','));
     });
 });

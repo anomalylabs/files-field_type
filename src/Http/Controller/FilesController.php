@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
-use Anomaly\FilesModule\Folder\Command\GetFolder;
+use Anomaly\FilesFieldType\Support\AllowedFolders;
 use Anomaly\FilesFieldType\Table\FileTableBuilder;
+use Anomaly\FilesModule\Folder\Command\GetFolder;
 use Anomaly\FilesFieldType\Table\ValueTableBuilder;
+use Anomaly\Streams\Platform\Support\Authorizer;
 use Anomaly\Streams\Platform\Http\Controller\AdminController;
 use Anomaly\FilesModule\File\Contract\FileRepositoryInterface;
 use Anomaly\FilesModule\Folder\Contract\FolderRepositoryInterface;
@@ -29,24 +31,28 @@ class FilesController extends AdminController
      */
     public function index(FileTableBuilder $table, $key)
     {
-        return $table->setConfig(Cache::get($key))->render();
+        return $table->setConfig($this->config($key))->render();
     }
-
 
     /**
      * Return a list of folders to choose from.
      *
+     * Choosing a folder only leads to the uploader, so it
+     * takes the same permission the upload itself does.
+     *
      * @param FolderRepositoryInterface $folders
+     * @param Authorizer                $authorizer
      * @param                           $key
      *
      * @return \Illuminate\Contracts\View\View|mixed
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function choose(FolderRepositoryInterface $folders, $key)
+    public function choose(FolderRepositoryInterface $folders, Authorizer $authorizer, $key)
     {
-        $allowed = [];
+        $this->authorizeWrite($authorizer);
 
-        $config = Cache::get($key);
+        $config = $this->config($key);
+
+        $allowed = [];
 
         foreach (Arr::get($config, 'folders', []) as $identifier) {
 
@@ -70,37 +76,85 @@ class FilesController extends AdminController
     }
 
     /**
-     * Return a table of select items.
+     * Return a table of selected files.
      *
      * @param ValueTableBuilder $table
+     * @param                   $key
      *
      * @return null|string
      */
-    public function selected(ValueTableBuilder $table)
+    public function selected(ValueTableBuilder $table, $key)
     {
-        return $table->setUploaded(array_filter(explode(',', $this->request->get('uploaded'))))->make()->getTableContent();
+        return $table
+            ->setAllowedFolders(AllowedFolders::ids($this->config($key)))
+            ->setUploaded(array_filter(explode(',', $this->request->get('uploaded'))))
+            ->make()
+            ->getTableContent();
     }
 
     /**
      * Check if a file exists.
      *
+     * Only the uploader asks this, so it takes the same
+     * permission the upload itself does.
+     *
      * @param FileRepositoryInterface $files
+     * @param Authorizer              $authorizer
      * @param                         $folder
+     * @param                         $key
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function exists(FileRepositoryInterface $files, $folder)
+    public function exists(FileRepositoryInterface $files, Authorizer $authorizer, $folder, $key)
     {
+        $this->authorizeWrite($authorizer);
+
+        $config = $this->config($key);
+
         $success = true;
         $exists = false;
 
         /* @var FolderInterface|null $folder */
         $folder = dispatch_sync(new GetFolder($folder));
 
-        if ($folder && $file = $files->findByNameAndFolder($this->request->get('file'), $folder)) {
+        if (!$folder || !AllowedFolders::permits($config, $folder->getId())) {
+            abort(404);
+        }
+
+        if ($file = $files->findByNameAndFolder($this->request->get('file'), $folder)) {
             $exists = true;
         }
 
         return $this->response->json(compact('success', 'exists'));
+    }
+
+    /**
+     * Refuse a caller who may not write files.
+     *
+     * @param Authorizer $authorizer
+     */
+    protected function authorizeWrite(Authorizer $authorizer)
+    {
+        if (!$authorizer->authorize('anomaly.module.files::files.write')) {
+            abort(403);
+        }
+    }
+
+    /**
+     * Return the configuration the key stands for.
+     *
+     * An unresolvable key means the caller was never handed
+     * this configuration, so nothing is served for it.
+     *
+     * @param  string $key
+     * @return array
+     */
+    protected function config($key)
+    {
+        if (!$config = Cache::get($key)) {
+            abort(404);
+        }
+
+        return (array)$config;
     }
 }
