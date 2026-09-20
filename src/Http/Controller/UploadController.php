@@ -4,6 +4,7 @@ namespace Anomaly\FilesFieldType\Http\Controller;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Anomaly\FilesModule\File\FileSanitizer;
 use Anomaly\FilesModule\File\FileUploader;
 use Anomaly\FilesFieldType\Support\AllowedFolders;
 use Anomaly\FilesFieldType\Table\UploadTableBuilder;
@@ -91,6 +92,21 @@ class UploadController extends AdminController
             return $this->response->json(['message' => 'That folder is not allowed for this field.'], 403);
         }
 
+        /*
+         * The uploader validates against the folder. The field's
+         * own allowed types are narrower and it cannot see them,
+         * so they are applied here. An empty list is unrestricted.
+         */
+        if ($types = array_filter((array)Arr::get($config, 'allowed_types', []))) {
+
+            if (!in_array($this->extension($file), array_map('strtolower', $types), true)) {
+                return $this->response->json(
+                    ['message' => 'That file type is not allowed for this field.'],
+                    422
+                );
+            }
+        }
+
         try {
             $entry = $uploader->upload($file, $folder);
         } catch (\Exception $e) {
@@ -115,6 +131,23 @@ class UploadController extends AdminController
             ->setAllowedFolders(AllowedFolders::ids($this->config($key)))
             ->setUploaded(array_filter(explode(',', $this->request->get('uploaded'))))
             ->render();
+    }
+
+
+    /**
+     * Return the extension the uploader will store the file under.
+     *
+     * Derived through FileSanitizer so this and FileUploader agree
+     * on a name like "x.png.pdf".
+     *
+     * @param  UploadedFile $file
+     * @return string
+     */
+    protected function extension($file)
+    {
+        return strtolower(
+            pathinfo(FileSanitizer::clean($file->getClientOriginalName()), PATHINFO_EXTENSION)
+        );
     }
 
     /**
