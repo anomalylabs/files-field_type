@@ -3,7 +3,7 @@
 namespace Anomaly\FilesFieldType\Http\Controller;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Cache;
+use Anomaly\FilesFieldType\Support\ConfigCache;
 use Anomaly\FilesModule\File\FileSanitizer;
 use Anomaly\FilesModule\File\FileUploader;
 use Anomaly\FilesFieldType\Support\AllowedFolders;
@@ -170,7 +170,7 @@ class UploadController extends AdminController
      */
     protected function config($key)
     {
-        if (!$config = Cache::get($key)) {
+        if (!$config = ConfigCache::get($key)) {
             abort(404);
         }
 

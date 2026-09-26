@@ -1,7 +1,7 @@
 <?php namespace Anomaly\FilesFieldType\Table;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
+use Anomaly\FilesFieldType\Support\ConfigCache;
 use Anomaly\FilesModule\Folder\Command\GetFolder;
 use Anomaly\FilesModule\Folder\Contract\FolderRepositoryInterface;
 
@@ -26,7 +26,7 @@ class FileTableFilters
     ) {
         $allowed = [];
 
-        $config = Cache::get($request->route('key'));
+        $config = ConfigCache::get($request->route('key'));
 
         foreach (array_get($config, 'folders', []) as $identifier) {
 
