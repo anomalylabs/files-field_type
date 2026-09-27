@@ -3,6 +3,7 @@
 use Anomaly\FilesFieldType\Support\ConfigCache;
 use Illuminate\Support\Arr;
 use Anomaly\FilesModule\File\FileModel;
+use Anomaly\FilesModule\File\Contract\FileInterface;
 use Anomaly\Streams\Platform\Model\EloquentModel;
 use Anomaly\Streams\Platform\Ui\Form\FormBuilder;
 use Anomaly\FilesFieldType\Table\ValueTableBuilder;
@@ -163,7 +164,20 @@ class FilesFieldType extends FieldType
      */
     public function getRelatedModel()
     {
-        return app($this->config('related', 'Anomaly\FilesModule\File\FileModel'));
+        $model = $this->config('related', FileModel::class);
+
+        /*
+         * Check the class before making it. Anything the
+         * container can build would otherwise be constructed
+         * before it could be rejected.
+         */
+        if (!is_string($model) || !is_subclass_of($model, FileInterface::class)) {
+            throw new \Exception(
+                "The [related] configuration of field [{$this->getField()}] must name a file model."
+            );
+        }
+
+        return app($model);
     }
 
     /**
